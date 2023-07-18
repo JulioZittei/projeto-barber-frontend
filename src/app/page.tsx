@@ -1,9 +1,9 @@
-import { Logo } from "@/components/Logo";
+import { Welcome } from "@/components/welcome";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Logo />
+    <main className="h-full w-full flex-1 px-6 pb-8 pt-6">
+      <Welcome />
     </main>
   );
 }
