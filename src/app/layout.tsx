@@ -5,6 +5,7 @@ import {
   Roboto_Flex as Roboto,
   Black_Ops_One as BlackOps,
 } from "next/font/google";
+import { cn } from "@/lib/utils";
 
 const roboto = Roboto({ subsets: ["latin"], variable: "--font-roboto" });
 const blackOps = BlackOps({
@@ -33,7 +34,11 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${roboto.variable} ${blackOps.variable} flex h-[100dvh] flex-col items-center bg-gray-900 bg-cover bg-center font-sans text-gray-100`}
+        className={cn(
+          roboto.variable,
+          blackOps.variable,
+          "flex h-[100dvh] flex-col items-center bg-gray-900 bg-cover bg-center font-sans text-gray-100",
+        )}
         style={{
           backgroundImage:
             "linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.9)), url(home_bg.jpeg)",
