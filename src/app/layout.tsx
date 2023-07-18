@@ -37,7 +37,7 @@ export default function RootLayout({
         className={cn(
           roboto.variable,
           blackOps.variable,
-          "flex h-[100dvh] flex-col items-center bg-gray-900 bg-cover bg-center font-sans text-gray-100",
+          "flex h-[100dvh] flex-col items-center bg-black/90 bg-cover bg-center font-sans text-gray-100",
         )}
         style={{
           backgroundImage:
