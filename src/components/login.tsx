@@ -22,6 +22,9 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { FormEvent, useState } from "react";
+import { PiEyeBold, PiEyeClosedBold } from "react-icons/pi";
+import { Loader2 } from "lucide-react";
 
 type Props = {};
 
@@ -35,6 +38,9 @@ const formSchema = z.object({
 });
 
 export function Login({}: Props) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,8 +49,18 @@ export function Login({}: Props) {
     },
   });
 
+  function handleToggleShowPassword(e: FormEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    setShowPassword(!showPassword);
+  }
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    form.reset();
+    setIsLoading(true);
+    setTimeout(() => {
+      console.log("wait 5 seconds");
+      form.reset();
+      setIsLoading(false);
+    }, 5000);
   }
 
   return (
@@ -63,7 +79,7 @@ export function Login({}: Props) {
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem className="mb-3">
+                  <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input placeholder="Seu email" {...field} />
@@ -78,22 +94,45 @@ export function Login({}: Props) {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem className="mb-3">
-                    <FormLabel>Senha</FormLabel>
+                  <FormItem>
+                    <FormLabel htmlFor="password">Senha</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Sua senha"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          className="pr-12"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Sua senha"
+                          {...field}
+                        />
+                        <button
+                          tabIndex={-1}
+                          className="absolute inset-y-0 right-0 flex items-center px-4 text-muted-foreground"
+                          onClick={handleToggleShowPassword}
+                        >
+                          {showPassword ? <PiEyeBold /> : <PiEyeClosedBold />}
+                        </button>
+                      </div>
                     </FormControl>
-                    {/* <FormDescription /> */}
                     <FormMessage />
+                    <FormDescription>
+                      <Button
+                        variant="link"
+                        className="h-auto p-0 text-sm leading-none text-muted-foreground underline"
+                        asChild
+                      >
+                        <Link href="/forgot-password">Esqueceu sua senha?</Link>
+                      </Button>
+                    </FormDescription>
                   </FormItem>
                 )}
               />
 
-              <Button className="w-full bg-orange hover:bg-orange hover:brightness-95">
+              <Button
+                className="w-full bg-orange hover:bg-orange hover:brightness-95"
+                disabled={isLoading}
+              >
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Entrar
               </Button>
             </form>

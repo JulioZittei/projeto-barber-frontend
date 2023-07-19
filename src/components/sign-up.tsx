@@ -22,6 +22,10 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { PiEyeBold, PiEyeClosedBold } from "react-icons/pi";
+import { Loader2 } from "lucide-react";
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
@@ -53,6 +57,15 @@ const formSchema = z
   });
 
 export function SignUp({}: Props) {
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  function handleToggleShowPassword(e: FormEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    setShowPassword(!showPassword);
+  }
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -62,8 +75,14 @@ export function SignUp({}: Props) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    form.reset();
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    setTimeout(() => {
+      console.log("wait 5 seconds");
+      form.reset();
+      setIsLoading(false);
+      router.push("/register/confirm");
+    }, 5000);
   }
 
   return (
@@ -100,11 +119,22 @@ export function SignUp({}: Props) {
                   <FormItem className="mb-3">
                     <FormLabel>Crie uma senha</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Sua senha"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          className="pr-12"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Sua senha"
+                          {...field}
+                        />
+                        <button
+                          tabIndex={-1}
+                          className="absolute inset-y-0 right-0 flex items-center px-4 text-muted-foreground"
+                          onClick={handleToggleShowPassword}
+                        >
+                          {showPassword ? <PiEyeBold /> : <PiEyeClosedBold />}
+                        </button>
+                      </div>
                     </FormControl>
                     {/* <FormDescription /> */}
                     <FormMessage />
@@ -119,11 +149,22 @@ export function SignUp({}: Props) {
                   <FormItem className="mb-3">
                     <FormLabel>Confirme sua senha</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Confirme sua senha"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          id="passwordMatch"
+                          className="pr-12"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Confirme sua senha"
+                          {...field}
+                        />
+                        <button
+                          tabIndex={-1}
+                          className="absolute inset-y-0 right-0 flex items-center px-4 text-muted-foreground"
+                          onClick={handleToggleShowPassword}
+                        >
+                          {showPassword ? <PiEyeBold /> : <PiEyeClosedBold />}
+                        </button>
+                      </div>
                     </FormControl>
                     {/* <FormDescription /> */}
                     <FormMessage />
@@ -131,7 +172,11 @@ export function SignUp({}: Props) {
                 )}
               />
 
-              <Button className="w-full bg-orange hover:bg-orange hover:brightness-95">
+              <Button
+                className="w-full bg-orange hover:bg-orange hover:brightness-95"
+                disabled={isLoading}
+              >
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Criar conta
               </Button>
             </form>
