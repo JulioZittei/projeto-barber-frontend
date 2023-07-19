@@ -41,7 +41,7 @@ export default function RootLayout({
         )}
         style={{
           backgroundImage:
-            "linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.9)), url(home_bg.jpeg)",
+            "linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.9)), url(../home_bg.jpeg)",
         }}
       >
         <header className="w-full flex-row items-center justify-start p-6">
