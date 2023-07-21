@@ -60,7 +60,6 @@ export function Login({}: Props) {
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const res = await fetch("https://brasilapi.com.br/api/cep/v1/06342140");
     form.reset();
   }
 

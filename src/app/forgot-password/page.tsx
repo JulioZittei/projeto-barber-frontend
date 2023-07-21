@@ -9,6 +9,6 @@ export const metadata: Metadata = {
     "Informe o e-mail vinculado à sua conta e iremos enviar um link para redefinição de senha.",
 };
 
-export default function RegisterPage() {
+export default function ForgotPasswordPage() {
   return <ForgotPassword />;
 }

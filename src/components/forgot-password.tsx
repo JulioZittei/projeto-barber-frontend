@@ -51,14 +51,21 @@ export function ForgotPassword({}: Props) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const res = await fetch("https://brasilapi.com.br/api/cep/v1/06342140");
+    if (values.email === "invalid@mail.com") {
+      toast({
+        variant: "destructive",
+        title: "Ops! Deu ruim",
+        description: "Ocorreu um erro no seu pedido de recuperação de senha.",
+      });
+    } else {
+      toast({
+        variant: "success",
+        title: "E-mail enviado",
+        description:
+          "Enviamos um link de redefinição de senha para seu e-mail.",
+      });
+    }
     form.reset();
-
-    toast({
-      variant: "success",
-      title: "E-mail enviado!",
-      description: "Enviamos um link de redefinição de senha para seu e-mail.",
-    });
   }
 
   return (

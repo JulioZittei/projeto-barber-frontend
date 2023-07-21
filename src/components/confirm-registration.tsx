@@ -17,6 +17,8 @@ import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useToast } from "./ui/use-toast";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
@@ -31,6 +33,8 @@ const formSchema = z.object({
 
 export function ConfirmRegistration({}: Props) {
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -128,8 +132,17 @@ export function ConfirmRegistration({}: Props) {
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const res = await fetch("https://brasilapi.com.br/api/cep/v1/06342140");
+    const code = Object.values(values).join("");
     form.reset();
+    if (code === "0000") {
+      toast({
+        variant: "destructive",
+        title: "Ops! De ruim",
+        description: "Código informado inválido ou expirado.",
+      });
+    } else {
+      router.push("/register/confirmed");
+    }
   }
 
   return (
