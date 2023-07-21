@@ -8,9 +8,9 @@ type Props = {};
 
 export function AccountConfirmed({}: Props) {
   return (
-    <div className="min-h-[90dvh] w-full flex-1">
-      <Card className="flex min-h-[90dvh] w-full flex-1 justify-center rounded-b-none rounded-t-3xl ">
-        <CardContent className="flex min-h-[90dvh] flex-1 flex-col items-center justify-center p-6">
+    <div className="w-full flex-1">
+      <Card className="flex w-full flex-1 justify-center rounded-b-none rounded-t-3xl ">
+        <CardContent className="flex flex-1 flex-col items-center justify-center p-6">
           <Image src={Done} alt="Pronto" className="mb-8" />
 
           <CardTitle className="mb-4">Pronto!</CardTitle>
