@@ -25,13 +25,19 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { PiEyeBold, PiEyeClosedBold } from "react-icons/pi";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Props = {};
 
 const formSchema = z.object({
-  email: z.string().nonempty({
-    message: "Email é obrigatório",
-  }),
+  email: z
+    .string()
+    .nonempty({
+      message: "E-mail é obrigatório",
+    })
+    .email({
+      message: "E-mail inválido",
+    }),
   password: z.string().nonempty({
     message: "Senha é obrigatória",
   }),
@@ -39,7 +45,6 @@ const formSchema = z.object({
 
 export function Login({}: Props) {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,13 +59,9 @@ export function Login({}: Props) {
     setShowPassword(!showPassword);
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    setTimeout(() => {
-      console.log("wait 5 seconds");
-      form.reset();
-      setIsLoading(false);
-    }, 5000);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const res = await fetch("https://brasilapi.com.br/api/cep/v1/06342140");
+    form.reset();
   }
 
   return (
@@ -80,9 +81,16 @@ export function Login({}: Props) {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>E-mail</FormLabel>
                     <FormControl>
-                      <Input placeholder="Seu email" {...field} />
+                      <Input
+                        placeholder="Seu e-mail"
+                        {...field}
+                        className={cn(
+                          form.formState.errors[field.name] &&
+                            "border border-solid border-destructive",
+                        )}
+                      />
                     </FormControl>
                     {/* <FormDescription /> */}
                     <FormMessage />
@@ -100,10 +108,14 @@ export function Login({}: Props) {
                       <div className="relative">
                         <Input
                           id="password"
-                          className="pr-12"
                           type={showPassword ? "text" : "password"}
                           placeholder="Sua senha"
                           {...field}
+                          className={cn(
+                            form.formState.errors[field.name] &&
+                              "border border-solid border-destructive",
+                            "pr-12",
+                          )}
                         />
                         <button
                           tabIndex={-1}
@@ -130,9 +142,11 @@ export function Login({}: Props) {
 
               <Button
                 className="w-full bg-orange hover:bg-orange hover:brightness-95"
-                disabled={isLoading}
+                disabled={form.formState.isSubmitting}
               >
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {form.formState.isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Entrar
               </Button>
             </form>

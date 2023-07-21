@@ -8,9 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
-  return (
-    <main className="h-full w-full flex-1">
-      <ConfirmRegistration />
-    </main>
-  );
+  return <ConfirmRegistration />;
 }
