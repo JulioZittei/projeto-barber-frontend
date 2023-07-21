@@ -6,10 +6,6 @@ export const metadata: Metadata = {
   description: "Faça login para acessar sua conta.",
 };
 
-export default function RegisterPage() {
-  return (
-    <main className="h-full w-full flex-1">
-      <Login />
-    </main>
-  );
+export default function LoginPage() {
+  return <Login />;
 }

@@ -7,24 +7,18 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { useFieldArray, useForm } from "react-hook-form";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage,
-} from "./ui/form";
+import { useForm } from "react-hook-form";
+import { Form } from "./ui/form";
+import { ResendTimedButton } from "@/components/resend-timed-button";
 import { Input } from "./ui/input";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "./ui/button";
-import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useToast } from "./ui/use-toast";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
@@ -38,8 +32,9 @@ const formSchema = z.object({
 });
 
 export function ConfirmRegistration({}: Props) {
-  const [isLoading, setIsLoading] = useState(false);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -132,14 +127,22 @@ export function ConfirmRegistration({}: Props) {
     }
   };
 
-  function onSubmit(values: z.infer<typeof formSchema>): void {
-    setIsLoading(true);
-    setTimeout(() => {
-      console.log(values);
-      console.log(Object.values(values).join(""));
-      form.reset();
-      setIsLoading(false);
-    }, 5000);
+  const handleResend = async () => {
+    console.log("resend");
+  };
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const code = Object.values(values).join("");
+    form.reset();
+    if (code === "0000") {
+      toast({
+        variant: "destructive",
+        title: "Ops! De ruim",
+        description: "Código informado inválido ou expirado.",
+      });
+    } else {
+      router.push("/register/confirmed");
+    }
   }
 
   return (
@@ -148,7 +151,7 @@ export function ConfirmRegistration({}: Props) {
         <CardHeader className="items-center">
           <CardTitle>Verificação de Segurança</CardTitle>
           <CardDescription className="text-center">
-            Enviamos um código para seu email <strong>jul**@gmail.com</strong>
+            Enviamos um código para seu e-mail <strong>jul**@gmail.com</strong>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -162,7 +165,7 @@ export function ConfirmRegistration({}: Props) {
                         type="text"
                         inputMode="numeric"
                         className={cn(
-                          "flex h-full w-full flex-col items-center justify-center rounded-xl border border-gray-200 bg-white px-5 text-center text-lg outline-none  focus:bg-gray-50 focus:ring-1 focus-visible:border-gray-200",
+                          "flex h-full w-full flex-col items-center justify-center rounded-xl px-5 text-center text-lg ",
                           form.formState.errors[value as Field] &&
                             "border border-solid border-destructive",
                         )}
@@ -194,9 +197,9 @@ export function ConfirmRegistration({}: Props) {
                     <Button
                       className="w-full bg-orange hover:bg-orange hover:brightness-95"
                       size="lg"
-                      disabled={isLoading}
+                      disabled={form.formState.isSubmitting}
                     >
-                      {isLoading && (
+                      {form.formState.isSubmitting && (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       )}
                       Verificar
@@ -210,9 +213,7 @@ export function ConfirmRegistration({}: Props) {
         <CardFooter className="justify-center">
           <p className="text-center text-muted-foreground">
             Não recebeu o código?{" "}
-            <Button variant="link" className="p-0" asChild>
-              <Link href="/register">Reenviar</Link>
-            </Button>
+            <ResendTimedButton startAtSeconds={60} onResend={handleResend} />
           </p>
         </CardFooter>
       </Card>

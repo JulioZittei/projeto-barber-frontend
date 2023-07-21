@@ -26,14 +26,20 @@ import { PiEyeBold, PiEyeClosedBold } from "react-icons/pi";
 import { Loader2 } from "lucide-react";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 type Props = {};
 
 const formSchema = z
   .object({
-    email: z.string().email({
-      message: "Email inválido",
-    }),
+    email: z
+      .string()
+      .nonempty({
+        message: "E-mail é obrigatório",
+      })
+      .email({
+        message: "E-mail inválido",
+      }),
     password: z
       .string()
       .min(8, {
@@ -59,7 +65,6 @@ const formSchema = z
 export function SignUp({}: Props) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   function handleToggleShowPassword(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault();
@@ -76,13 +81,8 @@ export function SignUp({}: Props) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    setTimeout(() => {
-      console.log("wait 5 seconds");
-      form.reset();
-      setIsLoading(false);
-      router.push("/register/confirm");
-    }, 5000);
+    form.reset();
+    router.push("/register/confirm");
   }
 
   return (
@@ -102,9 +102,16 @@ export function SignUp({}: Props) {
                 name="email"
                 render={({ field }) => (
                   <FormItem className="mb-3">
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>E-email</FormLabel>
                     <FormControl>
-                      <Input placeholder="Seu email" {...field} />
+                      <Input
+                        placeholder="Seu e-mail"
+                        {...field}
+                        className={cn(
+                          form.formState.errors[field.name] &&
+                            "border border-solid border-destructive",
+                        )}
+                      />
                     </FormControl>
                     {/* <FormDescription /> */}
                     <FormMessage />
@@ -122,7 +129,11 @@ export function SignUp({}: Props) {
                       <div className="relative">
                         <Input
                           id="password"
-                          className="pr-12"
+                          className={cn(
+                            form.formState.errors[field.name] &&
+                              "border border-solid border-destructive",
+                            "pr-12",
+                          )}
                           type={showPassword ? "text" : "password"}
                           placeholder="Sua senha"
                           {...field}
@@ -152,7 +163,11 @@ export function SignUp({}: Props) {
                       <div className="relative">
                         <Input
                           id="passwordMatch"
-                          className="pr-12"
+                          className={cn(
+                            form.formState.errors[field.name] &&
+                              "border border-solid border-destructive",
+                            "pr-12",
+                          )}
                           type={showPassword ? "text" : "password"}
                           placeholder="Confirme sua senha"
                           {...field}
@@ -174,9 +189,11 @@ export function SignUp({}: Props) {
 
               <Button
                 className="w-full bg-orange hover:bg-orange hover:brightness-95"
-                disabled={isLoading}
+                disabled={form.formState.isSubmitting}
               >
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {form.formState.isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Criar conta
               </Button>
             </form>

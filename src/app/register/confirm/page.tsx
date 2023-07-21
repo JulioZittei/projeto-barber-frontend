@@ -7,10 +7,6 @@ export const metadata: Metadata = {
   description: "Confirme seu e-mail para validar a sua conta.",
 };
 
-export default function RegisterPage() {
-  return (
-    <main className="h-full w-full flex-1">
-      <ConfirmRegistration />
-    </main>
-  );
+export default function ConfirmRegistrationPage() {
+  return <ConfirmRegistration />;
 }

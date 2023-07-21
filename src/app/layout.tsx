@@ -6,6 +6,7 @@ import {
   Black_Ops_One as BlackOps,
 } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/toaster";
 
 const roboto = Roboto({ subsets: ["latin"], variable: "--font-roboto" });
 const blackOps = BlackOps({
@@ -16,7 +17,7 @@ const blackOps = BlackOps({
 
 export const metadata: Metadata = {
   title: "Barber Shop",
-  description: "Bem-vindo ao mundo dos homens de verdade",
+  description: "Bem-vindo ao mundo da autêntica masculinidade",
 };
 
 export default function RootLayout({
@@ -37,17 +38,22 @@ export default function RootLayout({
         className={cn(
           roboto.variable,
           blackOps.variable,
-          "flex h-[100dvh] flex-col items-center bg-black/90 bg-cover bg-center font-sans text-gray-100",
+          "min-h-[100dvh] bg-black/90 bg-cover bg-center font-sans text-gray-100",
         )}
         style={{
           backgroundImage:
             "linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.9)), url(../home_bg.jpeg)",
         }}
       >
-        <header className="w-full flex-row items-center justify-start p-6">
-          <Logo />
-        </header>
-        {children}
+        <div className="flex min-h-[100dvh] flex-col items-center">
+          <header className="w-full flex-row items-center justify-start p-6">
+            <Logo />
+          </header>
+          <main className="flex h-full w-full flex-1 items-end">
+            {children}
+          </main>
+        </div>
+        <Toaster />
       </body>
     </html>
   );

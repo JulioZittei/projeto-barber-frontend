@@ -14,7 +14,6 @@ import {
   FormItem,
   FormLabel,
   FormControl,
-  FormDescription,
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
@@ -22,10 +21,11 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { FormEvent, useState } from "react";
-import { PiEyeBold, PiEyeClosedBold } from "react-icons/pi";
-import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Loader2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "./ui/use-toast";
+import { ToastAction } from "./ui/toast";
 
 type Props = {};
 
@@ -38,28 +38,33 @@ const formSchema = z.object({
     .email({
       message: "E-mail inválido",
     }),
-  password: z.string().nonempty({
-    message: "Senha é obrigatória",
-  }),
 });
 
-export function Login({}: Props) {
-  const [showPassword, setShowPassword] = useState(false);
+export function ForgotPassword({}: Props) {
+  const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const { ...form } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      password: "",
     },
   });
 
-  function handleToggleShowPassword(e: FormEvent<HTMLButtonElement>) {
-    e.preventDefault();
-    setShowPassword(!showPassword);
-  }
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (values.email === "invalid@mail.com") {
+      toast({
+        variant: "destructive",
+        title: "Ops! Deu ruim",
+        description: "Ocorreu um erro no seu pedido de recuperação de senha.",
+      });
+    } else {
+      toast({
+        variant: "success",
+        title: "E-mail enviado",
+        description:
+          "Enviamos um link de redefinição de senha para seu e-mail.",
+      });
+    }
     form.reset();
   }
 
@@ -67,9 +72,10 @@ export function Login({}: Props) {
     <div className="flex h-full w-full flex-col justify-end">
       <Card className="rounded-b-none rounded-t-3xl">
         <CardHeader>
-          <CardTitle>Login</CardTitle>
+          <CardTitle>Recuperar Senha</CardTitle>
           <CardDescription>
-            Entre com sua conta ou crie uma nova
+            Insira abaixo o e-mail vinculado à sua conta e iremos enviar um link
+            para redefinição de senha.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -97,48 +103,6 @@ export function Login({}: Props) {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel htmlFor="password">Senha</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          id="password"
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Sua senha"
-                          {...field}
-                          className={cn(
-                            form.formState.errors[field.name] &&
-                              "border border-solid border-destructive",
-                            "pr-12",
-                          )}
-                        />
-                        <button
-                          tabIndex={-1}
-                          className="absolute inset-y-0 right-0 flex items-center px-4 text-muted-foreground"
-                          onClick={handleToggleShowPassword}
-                        >
-                          {showPassword ? <PiEyeBold /> : <PiEyeClosedBold />}
-                        </button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                    <FormDescription>
-                      <Button
-                        variant="link"
-                        className="h-auto p-0 text-sm leading-none text-muted-foreground underline"
-                        asChild
-                      >
-                        <Link href="/forgot-password">Esqueceu sua senha?</Link>
-                      </Button>
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
-
               <Button
                 className="w-full bg-orange hover:bg-orange hover:brightness-95"
                 disabled={form.formState.isSubmitting}
@@ -146,14 +110,14 @@ export function Login({}: Props) {
                 {form.formState.isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Entrar
+                Enviar
               </Button>
             </form>
           </Form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <Button variant="link" asChild>
-            <Link href="/register">Criar conta</Link>
+            <Link href="/login">Fazer login</Link>
           </Button>
         </CardFooter>
       </Card>
