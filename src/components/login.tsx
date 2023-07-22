@@ -72,7 +72,7 @@ export function Login({}: Props) {
             Entre com sua conta ou crie uma nova
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-3">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
@@ -132,7 +132,9 @@ export function Login({}: Props) {
                         className="h-auto p-0 text-sm leading-none text-muted-foreground underline"
                         asChild
                       >
-                        <Link href="/forgot-password">Esqueceu sua senha?</Link>
+                        <Link href="/auth/forgot-password">
+                          Esqueceu sua senha?
+                        </Link>
                       </Button>
                     </FormDescription>
                   </FormItem>

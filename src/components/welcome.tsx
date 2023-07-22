@@ -24,7 +24,7 @@ export function Welcome({}: Props) {
           className="flex-1 bg-orange hover:bg-orange hover:brightness-95"
           asChild
         >
-          <Link href="/login">Fazer login</Link>
+          <Link href="/auth/login">Fazer login</Link>
         </Button>
         <Button
           className="flex-1 bg-gray-300/10 bg-clip-padding backdrop-blur-sm backdrop-filter hover:bg-gray-300/10 hover:brightness-95"

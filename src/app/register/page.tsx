@@ -1,4 +1,6 @@
+import { MultiStepForm } from "@/components/multi-step-form";
 import { SignUp } from "@/components/sign-up";
+import RegisterProvider from "@/context/use-register";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,5 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
-  return <SignUp />;
+  return (
+    <RegisterProvider>
+      {/* <SignUp /> */}
+      <MultiStepForm />
+    </RegisterProvider>
+  );
 }
