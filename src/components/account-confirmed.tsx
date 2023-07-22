@@ -22,7 +22,7 @@ export function AccountConfirmed({}: Props) {
             className="w-full bg-orange hover:bg-orange hover:brightness-95"
             asChild
           >
-            <Link href="/login">Fazer login</Link>
+            <Link href="/auth/login">Fazer login</Link>
           </Button>
         </CardContent>
       </Card>

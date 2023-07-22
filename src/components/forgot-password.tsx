@@ -78,7 +78,7 @@ export function ForgotPassword({}: Props) {
             para redefinição de senha.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-3">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
@@ -117,7 +117,7 @@ export function ForgotPassword({}: Props) {
         </CardContent>
         <CardFooter className="flex justify-center">
           <Button variant="link" asChild>
-            <Link href="/login">Fazer login</Link>
+            <Link href="/auth/login">Fazer login</Link>
           </Button>
         </CardFooter>
       </Card>

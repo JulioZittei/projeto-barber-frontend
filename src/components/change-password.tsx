@@ -26,20 +26,13 @@ import { PiEyeBold, PiEyeClosedBold } from "react-icons/pi";
 import { Loader2 } from "lucide-react";
 import { useState, FormEvent } from "react";
 import { cn } from "@/lib/utils";
-import { useRegister } from "@/context/use-register";
+import { useToast } from "./ui/use-toast";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
 const formSchema = z
   .object({
-    email: z
-      .string()
-      .nonempty({
-        message: "E-mail é obrigatório",
-      })
-      .email({
-        message: "E-mail inválido",
-      }),
     password: z
       .string()
       .min(8, {
@@ -72,10 +65,10 @@ const formSchema = z
     path: ["passwordMatch"],
   });
 
-export function SignUp({}: Props) {
+export function ChangePassword({}: Props) {
   const [showPassword, setShowPassword] = useState(false);
-  const { setSignInInfo, nextStep, email, password, passwordMatch } =
-    useRegister();
+  const router = useRouter();
+  const { toast } = useToast();
 
   function handleToggleShowPassword(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault();
@@ -85,51 +78,31 @@ export function SignUp({}: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: email,
-      password: password,
-      passwordMatch: passwordMatch,
+      password: "",
+      passwordMatch: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setSignInInfo(values);
-    nextStep();
+    form.reset();
+    toast({
+      variant: "success",
+      title: "Senha alterada!",
+      description: "Agora é só fazer o login com sua nova senha",
+    });
+    router.push("/auth/login");
   }
 
   return (
     <div className="flex h-full w-full flex-col justify-end">
       <Card className="rounded-b-none rounded-t-3xl">
         <CardHeader>
-          <CardTitle>Cadastre-se</CardTitle>
-          <CardDescription>
-            Informe os dados abaixo para criar sua conta
-          </CardDescription>
+          <CardTitle>Criar Nova Senha</CardTitle>
+          <CardDescription>Informe e confirme sua nova senha</CardDescription>
         </CardHeader>
         <CardContent className="pb-3">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem className="mb-3">
-                    <FormLabel>E-email</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Seu e-mail"
-                        {...field}
-                        className={cn(
-                          form.formState.errors[field.name] &&
-                            "border border-solid border-destructive",
-                        )}
-                      />
-                    </FormControl>
-                    {/* <FormDescription /> */}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="password"
@@ -205,7 +178,7 @@ export function SignUp({}: Props) {
                 {form.formState.isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Criar conta
+                Salvar senha
               </Button>
             </form>
           </Form>

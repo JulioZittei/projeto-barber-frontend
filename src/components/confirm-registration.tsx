@@ -18,7 +18,7 @@ import { Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useToast } from "./ui/use-toast";
-import { useRouter } from "next/navigation";
+import { useRegister } from "@/context/use-register";
 
 type Props = {};
 
@@ -34,15 +34,15 @@ const formSchema = z.object({
 export function ConfirmRegistration({}: Props) {
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const { toast } = useToast();
-  const router = useRouter();
+  const { code, email, nextStep, previousStep } = useRegister();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      number0: "",
-      number1: "",
-      number2: "",
-      number3: "",
+      number0: code[0],
+      number1: code[1],
+      number2: code[2],
+      number3: code[3],
     },
   });
 
@@ -133,7 +133,6 @@ export function ConfirmRegistration({}: Props) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const code = Object.values(values).join("");
-    form.reset();
     if (code === "0000") {
       toast({
         variant: "destructive",
@@ -141,20 +140,21 @@ export function ConfirmRegistration({}: Props) {
         description: "Código informado inválido ou expirado.",
       });
     } else {
-      router.push("/register/confirmed");
+      nextStep();
     }
   }
 
   return (
     <div className="flex h-full w-full flex-col justify-end">
       <Card className="rounded-b-none rounded-t-3xl">
-        <CardHeader className="items-center">
+        <CardHeader className="items-center text-center">
           <CardTitle>Verificação de Segurança</CardTitle>
           <CardDescription className="text-center">
-            Enviamos um código para seu e-mail <strong>jul**@gmail.com</strong>
+            Insira o código de verificação enviado para o e-mail:{" "}
+            <strong>{email}</strong>
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-3">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="mt-3 flex flex-col">
@@ -210,7 +210,10 @@ export function ConfirmRegistration({}: Props) {
             </form>
           </Form>
         </CardContent>
-        <CardFooter className="justify-center">
+        <CardFooter className="flex-col justify-center">
+          <Button variant="link" onClick={previousStep}>
+            Alterar e-mail
+          </Button>
           <p className="text-center text-muted-foreground">
             Não recebeu o código?{" "}
             <ResendTimedButton startAtSeconds={60} onResend={handleResend} />
