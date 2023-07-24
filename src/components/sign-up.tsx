@@ -135,7 +135,7 @@ export function SignUp({}: Props) {
                 name="password"
                 render={({ field }) => (
                   <FormItem className="mb-3">
-                    <FormLabel>Crie uma senha</FormLabel>
+                    <FormLabel htmlFor="password">Crie uma senha</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -169,7 +169,9 @@ export function SignUp({}: Props) {
                 name="passwordMatch"
                 render={({ field }) => (
                   <FormItem className="mb-3">
-                    <FormLabel>Confirme sua senha</FormLabel>
+                    <FormLabel htmlFor="passwordMatch">
+                      Confirme sua senha
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
