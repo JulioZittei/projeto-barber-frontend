@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils";
 import { useRegister } from "@/context/use-register";
 import { api } from "@/lib/api";
 import { useToast } from "./ui/use-toast";
+import { AxiosError } from "axios";
 
 type Props = {};
 
@@ -103,12 +104,19 @@ export function SignUp({}: Props) {
       setSignInInfo(values);
       nextStep();
     } catch (err: unknown) {
-      console.log(err);
-      toast({
-        variant: "destructive",
-        title: "Ops! Deu ruim",
-        description: "Ocorreu um erro durante a criação de sua conta.",
-      });
+      if (err instanceof AxiosError && err.response?.data?.message) {
+        toast({
+          variant: "destructive",
+          title: "Ops! Deu ruim",
+          description: err.response?.data.message.Erro,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Ops! Deu ruim",
+          description: "Ocorreu um erro durante a criação de sua conta.",
+        });
+      }
     }
   }
 
