@@ -1,5 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: `${process.env.BASE_URL ?? "http://localhost:3000/api"}`,
+  baseURL: `${
+    process.env.BASE_URL ?? "https://projeto-barber-frontend-dev.vercel.app/api"
+  }`,
 });
