@@ -69,7 +69,6 @@ export function Login({}: Props) {
         email: values.email,
         password: values.password,
       });
-      console.log(result.data);
       form.reset();
     } catch (err: unknown) {
       if (err instanceof AxiosError && err.response?.data?.message) {
