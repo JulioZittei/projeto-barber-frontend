@@ -27,6 +27,8 @@ import { Loader2 } from "lucide-react";
 import { useState, FormEvent } from "react";
 import { cn } from "@/lib/utils";
 import { useRegister } from "@/context/use-register";
+import { api } from "@/lib/api";
+import { useToast } from "./ui/use-toast";
 
 type Props = {};
 
@@ -74,6 +76,7 @@ const formSchema = z
 
 export function SignUp({}: Props) {
   const [showPassword, setShowPassword] = useState(false);
+  const { toast } = useToast();
   const { setSignInInfo, nextStep, email, password, passwordMatch } =
     useRegister();
 
@@ -92,8 +95,21 @@ export function SignUp({}: Props) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setSignInInfo(values);
-    nextStep();
+    try {
+      await api.post("/auth/register", {
+        email: values.email,
+        password: values.password,
+      });
+      setSignInInfo(values);
+      nextStep();
+    } catch (err: unknown) {
+      console.log(err);
+      toast({
+        variant: "destructive",
+        title: "Ops! Deu ruim",
+        description: "Ocorreu um erro durante a criação de sua conta.",
+      });
+    }
   }
 
   return (
@@ -107,7 +123,7 @@ export function SignUp({}: Props) {
         </CardHeader>
         <CardContent className="pb-3">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(onSubmit)} action="POST">
               <FormField
                 control={form.control}
                 name="email"

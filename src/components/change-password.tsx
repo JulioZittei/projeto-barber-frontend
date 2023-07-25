@@ -27,7 +27,9 @@ import { Loader2 } from "lucide-react";
 import { useState, FormEvent } from "react";
 import { cn } from "@/lib/utils";
 import { useToast } from "./ui/use-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { api } from "@/lib/api";
+import { AxiosError } from "axios";
 
 type Props = {};
 
@@ -68,6 +70,7 @@ const formSchema = z
 export function ChangePassword({}: Props) {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const params = useSearchParams();
   const { toast } = useToast();
 
   function handleToggleShowPassword(e: FormEvent<HTMLButtonElement>) {
@@ -84,13 +87,33 @@ export function ChangePassword({}: Props) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    form.reset();
-    toast({
-      variant: "success",
-      title: "Senha alterada!",
-      description: "Agora é só fazer o login com sua nova senha",
-    });
-    router.push("/auth/login");
+    try {
+      await api.post("/auth/change-password", {
+        token: params.get("token"),
+        password: values.password,
+      });
+      form.reset();
+      toast({
+        variant: "success",
+        title: "Senha alterada!",
+        description: "Agora é só fazer o login com sua nova senha",
+      });
+      router.push("/auth/login");
+    } catch (err: unknown) {
+      if (err instanceof AxiosError && err.response?.data?.message) {
+        toast({
+          variant: "destructive",
+          title: "Ops! Deu ruim",
+          description: err.response?.data.message.Erro,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Ops! Deu ruim",
+          description: "Ocorreu um erro durante a alteração da senha.",
+        });
+      }
+    }
   }
 
   return (
@@ -102,13 +125,13 @@ export function ChangePassword({}: Props) {
         </CardHeader>
         <CardContent className="pb-3">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(onSubmit)} action="POST">
               <FormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem className="mb-3">
-                    <FormLabel>Crie uma senha</FormLabel>
+                    <FormLabel htmlFor="password">Crie uma senha</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -142,7 +165,7 @@ export function ChangePassword({}: Props) {
                 name="passwordMatch"
                 render={({ field }) => (
                   <FormItem className="mb-3">
-                    <FormLabel>Confirme sua senha</FormLabel>
+                    <FormLabel htmlFor="password">Confirme sua senha</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
