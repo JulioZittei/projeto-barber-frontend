@@ -26,6 +26,9 @@ import { FormEvent, useState } from "react";
 import { PiEyeBold, PiEyeClosedBold } from "react-icons/pi";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { useToast } from "./ui/use-toast";
+import { AxiosError } from "axios";
 
 type Props = {};
 
@@ -44,6 +47,7 @@ const formSchema = z.object({
 });
 
 export function Login({}: Props) {
+  const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -60,7 +64,28 @@ export function Login({}: Props) {
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    form.reset();
+    try {
+      const result = await api.post("/auth/login", {
+        email: values.email,
+        password: values.password,
+      });
+      console.log(result.data);
+      form.reset();
+    } catch (err: unknown) {
+      if (err instanceof AxiosError && err.response?.data?.message) {
+        toast({
+          variant: "destructive",
+          title: "Ops! Deu ruim",
+          description: err.response?.data.message.Erro,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Ops! Deu ruim",
+          description: "Ocorreu um erro durante a tentativa de login.",
+        });
+      }
+    }
   }
 
   return (
@@ -74,7 +99,7 @@ export function Login({}: Props) {
         </CardHeader>
         <CardContent className="pb-3">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(onSubmit)} action="POST">
               <FormField
                 control={form.control}
                 name="email"

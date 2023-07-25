@@ -26,6 +26,8 @@ import { Loader2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "./ui/use-toast";
 import { ToastAction } from "./ui/toast";
+import { api } from "@/lib/api";
+import { AxiosError } from "axios";
 
 type Props = {};
 
@@ -51,21 +53,34 @@ export function ForgotPassword({}: Props) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (values.email === "invalid@mail.com") {
-      toast({
-        variant: "destructive",
-        title: "Ops! Deu ruim",
-        description: "Ocorreu um erro no seu pedido de recuperação de senha.",
+    try {
+      await api.post("/auth/forgot-password", {
+        email: values.email,
       });
-    } else {
+
+      form.reset();
+
       toast({
         variant: "success",
         title: "E-mail enviado",
         description:
           "Enviamos um link de redefinição de senha para seu e-mail.",
       });
+    } catch (err: unknown) {
+      if (err instanceof AxiosError && err.response?.data?.message) {
+        toast({
+          variant: "destructive",
+          title: "Ops! Deu ruim",
+          description: err.response?.data.message.Erro,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Ops! Deu ruim",
+          description: "Ocorreu um erro no seu pedido de recuperação de senha.",
+        });
+      }
     }
-    form.reset();
   }
 
   return (
@@ -80,7 +95,7 @@ export function ForgotPassword({}: Props) {
         </CardHeader>
         <CardContent className="pb-3">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(onSubmit)} action="POST">
               <FormField
                 control={form.control}
                 name="email"

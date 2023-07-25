@@ -19,6 +19,8 @@ import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useToast } from "./ui/use-toast";
 import { useRegister } from "@/context/use-register";
+import { api } from "@/lib/api";
+import { AxiosError } from "axios";
 
 type Props = {};
 
@@ -128,19 +130,57 @@ export function ConfirmRegistration({}: Props) {
   };
 
   const handleResend = async () => {
-    console.log("resend");
+    try {
+      await api.post("/auth/resend-code", {
+        email,
+      });
+      form.reset();
+      toast({
+        variant: "success",
+        title: "Código reenviado!",
+        description: "Verifique novamente sua caixa de entrada ou spam.",
+      });
+    } catch (err: unknown) {
+      if (err instanceof AxiosError && err.response?.data?.message) {
+        toast({
+          variant: "destructive",
+          title: "Ops! Deu ruim",
+          description: err.response?.data.message.Erro,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Ops! Deu ruim",
+          description:
+            "Ocorreu um erro durante o reenvio do código de verificação.",
+        });
+      }
+    }
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const code = Object.values(values).join("");
-    if (code === "0000") {
-      toast({
-        variant: "destructive",
-        title: "Ops! De ruim",
-        description: "Código informado inválido ou expirado.",
+
+    try {
+      await api.post("/auth/confirm", {
+        email,
+        code,
       });
-    } else {
       nextStep();
+    } catch (err: unknown) {
+      if (err instanceof AxiosError && err.response?.data?.message) {
+        toast({
+          variant: "destructive",
+          title: "Ops! Deu ruim",
+          description: err.response?.data.message.Erro,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Ops! De ruim",
+          description: "Código informado inválido ou expirado.",
+        });
+      }
     }
   }
 
@@ -156,7 +196,7 @@ export function ConfirmRegistration({}: Props) {
         </CardHeader>
         <CardContent className="pb-3">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(onSubmit)} action="POST">
               <div className="mt-3 flex flex-col">
                 <div className="mx-auto mb-9 flex w-full max-w-xs flex-row items-center justify-between">
                   {Object.keys(form.getValues()).map((value, index) => (
