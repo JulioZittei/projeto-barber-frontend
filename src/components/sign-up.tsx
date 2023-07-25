@@ -110,7 +110,6 @@ export function SignUp({}: Props) {
           variant: "destructive",
           title: "Ops! Deu ruim",
           description: err.response?.data.message.Erro,
-          // action: <ToastAction altText="Try again">Try again</ToastAction>,
         });
       } else {
         toast({
@@ -139,7 +138,7 @@ export function SignUp({}: Props) {
                 name="email"
                 render={({ field }) => (
                   <FormItem className="mb-3">
-                    <FormLabel>E-email</FormLabel>
+                    <FormLabel>E-mail</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Seu e-mail"
