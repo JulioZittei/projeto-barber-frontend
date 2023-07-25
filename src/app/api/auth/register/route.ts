@@ -11,7 +11,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       password,
     });
 
-    return new Response(null, {
+    return new Response(JSON.stringify(result.data), {
       status: result.status,
     });
   } catch (err: unknown) {

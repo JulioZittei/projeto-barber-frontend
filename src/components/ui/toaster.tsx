@@ -25,7 +25,7 @@ export function Toaster() {
             {props.variant === "destructive" && (
               <BsExclamationCircleFill className="text-4xl" />
             )}
-            <div className="grid gap-1">
+            <div className="grid flex-1 gap-1">
               {title && <ToastTitle>{title}</ToastTitle>}
               {description && (
                 <ToastDescription>{description}</ToastDescription>

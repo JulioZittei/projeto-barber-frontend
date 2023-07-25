@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils";
 import { useRegister } from "@/context/use-register";
 import { api } from "@/lib/api";
 import { useToast } from "./ui/use-toast";
+import { ToastAction } from "./ui/toast";
 import { AxiosError } from "axios";
 
 type Props = {};
@@ -104,11 +105,12 @@ export function SignUp({}: Props) {
       setSignInInfo(values);
       nextStep();
     } catch (err: unknown) {
-      if (err instanceof AxiosError && err.response?.data?.message) {
+      if (err instanceof AxiosError && err.response?.data?.message?.Erro) {
         toast({
           variant: "destructive",
           title: "Ops! Deu ruim",
           description: err.response?.data.message.Erro,
+          // action: <ToastAction altText="Try again">Try again</ToastAction>,
         });
       } else {
         toast({

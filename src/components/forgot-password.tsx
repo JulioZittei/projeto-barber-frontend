@@ -67,7 +67,7 @@ export function ForgotPassword({}: Props) {
           "Enviamos um link de redefinição de senha para seu e-mail.",
       });
     } catch (err: unknown) {
-      if (err instanceof AxiosError && err.response?.data?.message) {
+      if (err instanceof AxiosError && err.response?.data?.message?.Erro) {
         toast({
           variant: "destructive",
           title: "Ops! Deu ruim",
